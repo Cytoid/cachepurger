@@ -36,7 +36,7 @@ import { fetch } from 'cross-fetch';
     })
 
     const fileURLs: string[] = diffFiles.map(filePath => {
-      return (urlPrefix.endsWith('/') ? urlPrefix : urlPrefix + '/') + filePath;
+      return (urlPrefix.endsWith('/') ? urlPrefix : urlPrefix + '/') + filePath.replace('public/', ''); // Remove public prefix
     })
     console.log("Changed files:", JSON.stringify(fileURLs, null, 2));
 

@@ -2327,12 +2327,14 @@ var __generator = this && this.__generator || function (thisArg, body) {
   }
 };
 
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) r[k] = a[j];
-
-  return r;
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
 };
 
 Object.defineProperty(exports, "__esModule", {
@@ -2354,27 +2356,27 @@ var cross_fetch_1 = require("cross-fetch");
         case 0:
           _b.trys.push([0, 7,, 8]);
 
-          urlPrefix_1 = core_1.getInput('url-prefix', {
+          urlPrefix_1 = (0, core_1.getInput)('url-prefix', {
             required: true
           });
-          zoneID_1 = core_1.getInput('zone-id', {
+          zoneID_1 = (0, core_1.getInput)('zone-id', {
             required: true
           });
-          apiToken_1 = core_1.getInput('api-token');
-          apiKey_1 = core_1.getInput('api-key');
-          email_1 = core_1.getInput('email');
+          apiToken_1 = (0, core_1.getInput)('api-token');
+          apiKey_1 = (0, core_1.getInput)('api-key');
+          email_1 = (0, core_1.getInput)('email');
 
           if (!apiToken_1 && (!apiKey_1 || !email_1)) {
             throw 'either the API Token or API Key and Email are required for auth';
           }
 
-          fromCommit_1 = core_1.getInput('from-commit') || 'HEAD~1';
-          toCommit_1 = core_1.getInput('to-commit') || 'HEAD';
+          fromCommit_1 = (0, core_1.getInput)('from-commit') || 'HEAD~1';
+          toCommit_1 = (0, core_1.getInput)('to-commit') || 'HEAD';
           gitPath_1 = process.env.GITHUB_WORKSPACE || '.';
           return [4
           /*yield*/
           , new Promise(function (resolve, reject) {
-            child_process_1.exec("git diff --name-only " + fromCommit_1 + " " + toCommit_1, {
+            (0, child_process_1.exec)("git diff --name-only " + fromCommit_1 + " " + toCommit_1, {
               cwd: gitPath_1
             }, function (error, stdout, stderr) {
               if (error) {
@@ -2395,12 +2397,13 @@ var cross_fetch_1 = require("cross-fetch");
         case 1:
           diffFiles = _b.sent();
           fileURLs = diffFiles.map(function (filePath) {
-            return (urlPrefix_1.endsWith('/') ? urlPrefix_1 : urlPrefix_1 + '/') + filePath;
+            console.log(filePath);
+            return (urlPrefix_1.endsWith('/') ? urlPrefix_1 : urlPrefix_1 + '/') + filePath.replace('public/', ''); // Remove public prefix
           });
           console.log("Changed files:", JSON.stringify(fileURLs, null, 2));
           chunks = chunk(fileURLs, 30);
           requests = chunks.map(function (chunk) {
-            return cross_fetch_1.fetch("https://api.cloudflare.com/client/v4/zones/" + zoneID_1 + "/purge_cache", {
+            return (0, cross_fetch_1.fetch)("https://api.cloudflare.com/client/v4/zones/" + zoneID_1 + "/purge_cache", {
               method: 'POST',
               headers: Object.assign({
                 'Content-Type': 'application/json'
@@ -2472,12 +2475,12 @@ function chunk(arr, max) {
   var chunks = [];
 
   while (arr.length > max) {
-    chunks = __spreadArrays(chunks, [arr.slice(0, max)]);
+    chunks = __spreadArray(__spreadArray([], chunks, true), [arr.slice(0, max)], false);
     arr = arr.slice(max);
   }
 
   if (arr.length != 0) {
-    chunks = __spreadArrays(chunks, [arr]);
+    chunks = __spreadArray(__spreadArray([], chunks, true), [arr], false);
   }
 
   return chunks;
